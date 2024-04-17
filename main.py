@@ -4,7 +4,7 @@ import random
 import time
 import turtle
 
-# Setup game variables
+# region: Setup Game Variables 
 delay: float = 0.15
 score: int = 0
 high_score: int = 0
@@ -28,7 +28,9 @@ canvas: Any = turtle.Screen()
 head: Any = turtle.Turtle()
 food: Any = turtle.Turtle()
 text: Any = turtle.Turtle()
+# endregion: Setup Game Variables 
 
+# region: Functions
 def random_shape() -> str:
   return random.choice(['square', 'triangle', 'circle'])
 
@@ -78,8 +80,9 @@ def move() -> None:
   if head.direction == 'left':
     x = head.xcor()
     head.setx(x - 20)
+# endregion: Functions
 
-# Create a window
+# region: Configure Turtles
 canvas.title('Snake Game')
 canvas.colormode(255)
 canvas.bgcolor(background_color)
@@ -106,6 +109,7 @@ text.color(text_color)
 text.penup()
 text.hideturtle()
 text.goto(0, 250)
+# endregion: Configure Turtles
 
 update_scoreboard()
 
@@ -116,7 +120,7 @@ canvas.onkey(head_direction_down, 's')
 canvas.onkey(head_direction_right, 'd')
 canvas.onkey(head_direction_left, 'a')
 
-# Gameplay Loop
+# region: Main Gameplay Loop
 while True:
   canvas.update()
 
@@ -170,5 +174,6 @@ while True:
       update_scoreboard()
 
   time.sleep(delay)
+# endregion: Main Game Loop
 
 canvas.mainloop()
