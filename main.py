@@ -5,7 +5,7 @@ import turtle
 from time import sleep, time
 from typing import Any, Dict, List
 
-# region: Setup Game Variables 
+# region: Game Variables 
 delay: float = 0.15
 score: int = 0
 high_score: int = 0
@@ -29,7 +29,7 @@ canvas: Any = turtle.Screen()
 head: Any = turtle.Turtle()
 food: Any = turtle.Turtle()
 text: Any = turtle.Turtle()
-# endregion: Setup Game Variables 
+# endregion: Game Variables 
 
 # region: Functions
 def random_shape() -> str:
@@ -87,22 +87,24 @@ canvas.colormode(255)
 canvas.bgcolor(background_color)
 canvas.setup(width=600, height=600)
 canvas.tracer(0)
+canvas.listen()
+canvas.onkey(head_direction_up, 'w')
+canvas.onkey(head_direction_down, 's')
+canvas.onkey(head_direction_right, 'd')
+canvas.onkey(head_direction_left, 'a')
 
-# Setup snake head
 head.shape('square')
 head.color(head_color)
 head.penup()
 head.goto(0, 0)
 head.direction = 'Stop'
 
-# Setup food
 food.speed(0)
 food.shape(random_shape())
 food.color(food_color)
 food.penup()
 food.goto(0, 100)
 
-# Setup scoreboard
 text.speed(0)
 text.color(text_color)
 text.penup()
@@ -112,13 +114,7 @@ text.goto(0, 250)
 
 update_scoreboard()
 
-# Register keys
-canvas.listen()
-canvas.onkey(head_direction_up, 'w')
-canvas.onkey(head_direction_down, 's')
-canvas.onkey(head_direction_right, 'd')
-canvas.onkey(head_direction_left, 'a')
-
+# region: Main Game Loop
 start_time: float = time()
 while True:
   try:
