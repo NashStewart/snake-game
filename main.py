@@ -1,8 +1,9 @@
-from typing import Any, Dict, List
-
 import random
-import time
+import tkinter
 import turtle
+
+from time import sleep, time
+from typing import Any, Dict, List
 
 # region: Setup Game Variables 
 delay: float = 0.15
@@ -36,10 +37,8 @@ def random_shape() -> str:
 
 def reset_game() -> None:
   global score
-  global delay
   score = 0
-  delay = 0.15
-  time.sleep(1)
+  sleep(1)
   head.goto(0, 0)
   head.direction = 'stop'
   for segment in segments:
@@ -120,60 +119,66 @@ canvas.onkey(head_direction_down, 's')
 canvas.onkey(head_direction_right, 'd')
 canvas.onkey(head_direction_left, 'a')
 
-# region: Main Gameplay Loop
+start_time: float = time()
 while True:
-  canvas.update()
+  try:
+    if time() > start_time + delay: 
+      canvas.update()
 
-  # Check for head collisions with canvas boundaries
-  if head.xcor() > 290 or head.xcor() < -290 or head.ycor() > 290 or head.ycor() < -290:
-    reset_game()
-    update_scoreboard()
-  
-  # Check for head collisions with food
-  if head.distance(food) < 20:
-    # Add new segment
-    new_segment: Any = turtle.Turtle()
-    new_segment.speed(0)
-    new_segment.shape('square')
-    new_segment.color(body_color)
-    new_segment.penup()
-    segments.append(new_segment)
+      # Check for head collisions with canvas boundaries
+      if head.xcor() > 290 or head.xcor() < -290 or head.ycor() > 290 or head.ycor() < -290:
+        reset_game()
+        update_scoreboard()
+      
+      # Check for head collisions with food
+      if head.distance(food) < 20:
+        # Add new segment
+        new_segment: Any = turtle.Turtle()
+        new_segment.speed(0)
+        new_segment.shape('square')
+        new_segment.color(body_color)
+        new_segment.penup()
+        segments.append(new_segment)
 
-    # Add new food
-    new_food_x: int = random.randint(-270, 270) // 20 * 20
-    new_food_y: int = random.randint(-270, 270) // 20 * 20
-    food.shape(random_shape())
-    food.color(food_color)
-    food.goto(new_food_x, new_food_y)
-    
-    # Update scoreboard
-    delay -= 0.001
-    score += 10
-    if score > high_score:
-      high_score = score
-    update_scoreboard()
-  
-  # Make tail pieces trail each other
-  for index in range(len(segments) - 1, 0, -1):
-    segment_x: int = segments[index-1].xcor()
-    segment_y: int = segments[index-1].ycor()
-    segments[index].goto(segment_x, segment_y)
+        # Add new food
+        new_food_x: int = random.randint(-270, 270) // 20 * 20
+        new_food_y: int = random.randint(-270, 270) // 20 * 20
+        food.shape(random_shape())
+        food.color(food_color)
+        food.goto(new_food_x, new_food_y)
+        
+        # Update scoreboard
+        score += 10
+        if score > high_score:
+          high_score = score
+        update_scoreboard()
+      
+      # Make tail pieces trail each other
+      for index in range(len(segments) - 1, 0, -1):
+        segment_x: int = segments[index-1].xcor()
+        segment_y: int = segments[index-1].ycor()
+        segments[index].goto(segment_x, segment_y)
 
-  # Make first tail piece follow the head
-  if len(segments) > 0:
-    head_x: int = head.xcor()
-    head_y: int = head.ycor()
-    segments[0].goto(head_x, head_y)
-  
-  move()
-  
-  # Check for head collisions with body
-  for segment in segments:
-    if segment.distance(head) < 20:
-      reset_game()
-      update_scoreboard()
+      # Make first tail piece follow the head
+      if len(segments) > 0:
+        head_x: int = head.xcor()
+        head_y: int = head.ycor()
+        segments[0].goto(head_x, head_y)
+      
+      move()
+      
+      # Check for head collisions with body
+      for segment in segments:
+        if segment.distance(head) < 20:
+          reset_game()
+          update_scoreboard()
 
-  time.sleep(delay)
+      start_time = time()
+  except turtle.Terminator:
+    break
+  except tkinter.TclError:
+    break
 # endregion: Main Game Loop
 
-canvas.mainloop()
+if __name__ == "__main__":
+  canvas.mainloop()
