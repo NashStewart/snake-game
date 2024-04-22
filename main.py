@@ -13,23 +13,27 @@ segments: List = []
 mode = 'normal'
 
 colors: Dict[str, tuple] = {
-  'black': (13, 13, 13),
-  'dark_orange': (242, 110, 34),
-  'light_orange': (242, 163, 15),
-  'cyan': (13, 217, 217),
-  'pink': (217, 17, 127)
+  'dark_cyan': (0, 43, 54),
+  'yellow': (181, 137, 0),
+  'blue': (38, 139, 210),
+  'light_gray': (131, 148, 159),
+  'magenta': (211, 54, 130),
+  'dark_gray': (101, 123, 131),
+  'cyan': (42, 161, 152)
 }
 
-background_color: tuple = colors['black']
-food_color: tuple = colors['pink']
-head_color: tuple = colors['dark_orange']
-body_color: tuple = colors['light_orange']
-text_color: tuple = colors['cyan']
+background_color: tuple = colors['dark_cyan']
+food_color: tuple = colors['magenta']
+head_color: tuple = colors['yellow']
+body_color: tuple = colors['blue']
+scoreboard_text_color: tuple = colors['light_gray']
+vim_mode_text_color: tuple = colors['dark_gray']
 
 canvas: Any = turtle.Screen()
 head: Any = turtle.Turtle()
 food: Any = turtle.Turtle()
-text: Any = turtle.Turtle()
+scoreboard_text: Any = turtle.Turtle()
+vim_mode_text: Any = turtle.Turtle()
 # endregion: Game Variables 
 
 # region: Functions
@@ -47,10 +51,18 @@ def reset_game() -> None:
   segments.clear()  
 
 def update_scoreboard() -> None:
-  text.clear()
-  text.write("Score : {} High Score : {} ".format(
-      score, high_score), align="center", font=("candara", 24, "bold"))
-  
+  scoreboard_text.clear()
+  scoreboard_text.write(f'High Score : {high_score}\nScore : {score}', align="left", font=("candara", 24, "bold"))
+
+def update_vim_mode_display() -> None:
+  global mode
+  vim_mode_text.clear()
+  if mode != 'normal':
+    text = f'--{mode.upper()}--'
+  else:
+    text = ''
+  vim_mode_text.write(text, align="left", font=("candara", 20, "bold"))
+
 def head_direction_up() -> None:
   global mode
   if head.direction != 'down' and mode == 'normal':
@@ -75,11 +87,13 @@ def normal_mode() -> None:
   global mode
   if mode != 'normal':
     mode = 'normal'
+    update_vim_mode_display()
 
 def insert_mode() -> None:
   global mode
   if mode != 'insert':
     mode = 'insert'
+    update_vim_mode_display()
 
 def move() -> None:
   if head.direction == 'up':
@@ -124,14 +138,21 @@ food.color(food_color)
 food.penup()
 food.goto(0, 100)
 
-text.speed(0)
-text.color(text_color)
-text.penup()
-text.hideturtle()
-text.goto(0, 250)
+scoreboard_text.speed(0)
+scoreboard_text.color(scoreboard_text_color)
+scoreboard_text.penup()
+scoreboard_text.hideturtle()
+scoreboard_text.goto(-int(canvas.width / 2) + 20, int(canvas.height / 2) - 70)
+
+vim_mode_text.speed(0)
+vim_mode_text.color(vim_mode_text_color)
+vim_mode_text.penup()
+vim_mode_text.hideturtle()
+vim_mode_text.goto(-int(canvas.width / 2) + 20, -int(canvas.height / 2) + 20)
 # endregion: Configure Turtles
 
 update_scoreboard()
+update_vim_mode_display()
 
 # region: Main Game Loop
 start_time: float = time()
