@@ -10,6 +10,7 @@ delay: float = 0.15
 score: int = 0
 high_score: int = 0
 segments: List = []
+mode = 'normal'
 
 colors: Dict[str, tuple] = {
   'black': (13, 13, 13),
@@ -51,25 +52,39 @@ def update_scoreboard() -> None:
       score, high_score), align="center", font=("candara", 24, "bold"))
   
 def head_direction_up() -> None:
-  if head.direction != 'down':
+  global mode
+  if head.direction != 'down' and mode == 'normal':
     head.direction = 'up'
 
 def head_direction_down() -> None:
-  if head.direction != 'up':
+  global mode 
+  if head.direction != 'up' and mode == 'normal':
     head.direction = 'down'
 
 def head_direction_right() -> None:
-  if head.direction != 'left':
+  global mode 
+  if head.direction != 'left' and mode == 'normal':
     head.direction = 'right'
 
 def head_direction_left() -> None:
-  if head.direction != 'right':
+  global mode
+  if head.direction != 'right' and mode == 'normal':
     head.direction = 'left'
+
+def normal_mode() -> None:
+  global mode
+  if mode != 'normal':
+    mode = 'normal'
+
+def insert_mode() -> None:
+  global mode
+  if mode != 'insert':
+    mode = 'insert'
 
 def move() -> None:
   if head.direction == 'up':
     y = head.ycor()
-    head.sety(y + 20)
+    head.sety(y + 20) 
   if head.direction == 'down':
     y = head.ycor()
     head.sety(y - 20)
@@ -85,13 +100,17 @@ def move() -> None:
 canvas.title('Snake Game')
 canvas.colormode(255)
 canvas.bgcolor(background_color)
-canvas.setup(width=600, height=600)
+canvas.width = 800
+canvas.height = 800
+canvas.setup(width=canvas.width, height=canvas.height)
 canvas.tracer(0)
 canvas.listen()
-canvas.onkey(head_direction_up, 'w')
-canvas.onkey(head_direction_down, 's')
-canvas.onkey(head_direction_right, 'd')
-canvas.onkey(head_direction_left, 'a')
+canvas.onkey(head_direction_up, 'k')
+canvas.onkey(head_direction_down, 'j')
+canvas.onkey(head_direction_right, 'l')
+canvas.onkey(head_direction_left, 'h')
+canvas.onkey(normal_mode, 'Escape')
+canvas.onkey(insert_mode, 'i')
 
 head.shape('square')
 head.color(head_color)
@@ -122,12 +141,12 @@ while True:
       canvas.update()
 
       # Check for head collisions with canvas boundaries
-      if head.xcor() > 290 or head.xcor() < -290 or head.ycor() > 290 or head.ycor() < -290:
+      if head.xcor() > int(canvas.width / 2) - 20 or head.xcor() < -int(canvas.width / 2) + 10 or head.ycor() > int(canvas.height / 2) - 15 or head.ycor() < -int(canvas.height / 2) + 20:
         reset_game()
         update_scoreboard()
       
       # Check for head collisions with food
-      if head.distance(food) < 20:
+      if head.distance(food) < 20 and mode == 'insert':
         # Add new segment
         new_segment: Any = turtle.Turtle()
         new_segment.speed(0)
@@ -137,8 +156,8 @@ while True:
         segments.append(new_segment)
 
         # Add new food
-        new_food_x: int = random.randint(-270, 270) // 20 * 20
-        new_food_y: int = random.randint(-270, 270) // 20 * 20
+        new_food_x: int = random.randint(-(int(canvas.width / 2) - 30), (int(canvas.width / 2) - 30)) // 20 * 20
+        new_food_y: int = random.randint(-(int(canvas.height / 2) - 30), (int(canvas.height / 2) - 30)) // 20 * 20
         food.shape(random_shape())
         food.color(food_color)
         food.goto(new_food_x, new_food_y)
